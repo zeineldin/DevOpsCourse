@@ -1,0 +1,30 @@
+Vagrant.configure(2) do |config|
+
+  config.vm.box = "ubuntu/trusty64"
+
+  config.vm.define :docker19 do |web_config|
+      web_config.vm.host_name = "docke19"
+      web_config.vm.provider :virtualbox do |vb|
+          vb.customize ["modifyvm", :id, "--memory", "6048"]
+          vb.customize ["modifyvm", :id, "--cpus", "2"]
+
+end
+  config.vm.define :cd, primary: true do |cd|
+    cd.vm.network :forwarded_port, host: 8080, guest: 8080
+    cd.vm.network :forwarded_port, host: 5000, guest: 5000
+    cd.vm.network :forwarded_port, host: 2201, guest: 22, id: "ssh", auto_correct: true
+    cd.vm.network "private_network", ip: "192.168.50.91"
+    cd.vm.provision "shell", path: "bootstrap.sh"
+    cd.vm.hostname = "cd"
+  end
+  if Vagrant.has_plugin?("vagrant-cachier")
+    config.cache.scope = :box
+  end
+end
+end
+
+
+
+
+
+
